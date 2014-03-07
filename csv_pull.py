@@ -13,7 +13,7 @@ filename = "InterimScoresPB(test).csv"
 df = pd.read_csv(filename, usecols = [23, 30, 31, 32, 33], na_values=['null'])
 
 #Pull a second dataframe with NaN = 0 to calculate Average
-df_avg = pd.read_csv(filename, usecols = [30, 31, 32, 33], na_values=['null'])
+df_avg = pd.read_csv(filename, usecols = [30, 31, 32, 33], na_values=['null',])
 df_avg[np.isnan(df_avg)] = 0
 
 #Add columns that calculate the %s that will be read into the function
@@ -28,11 +28,11 @@ print df
 #df_output: cutmarks and confidence intervals
 
 #function: assign proficiencies based on percentile cutmarks (for latest interim)
-#df_plot: list of students new proficiencies & latest interim %
+#df_plot: list of students new proficiencies & latest interim(zip func) % (dynamic)
 
 #check: gaps (if the difference of the two cutmarks is < 1/(points possible)
 #	currently not needed to be dynamic: 1/27 for A2
-#checks: cutmark between CI
+#checks: confidence interval
 #checks: average is between the interim %
 
 #chart: horizontal bargraph (x: number of students, y: % score distribution in discrete increments)
