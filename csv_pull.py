@@ -38,7 +38,7 @@ print df_csv
 #Lorna:
 #check: gaps (if the difference of the two cutmarks is < 1/(points possible)
 #	currently not needed to be dynamic: 1/27 for A2
-#checks: confidence interval
+#checks: confidence interval overlapping
 #checks: average is between the interim %
 
 #Lorna:
