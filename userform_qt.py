@@ -14,7 +14,7 @@ class Example(QtGui.QWidget):
 		
 		#Buttons
 		apply = QtGui.QPushButton('Apply', self)
-		#apply.clicked.connect(self.applyClicked)
+		apply.clicked.connect(self.applyClicked)
 		export = QtGui.QPushButton('Export', self)
 		quit = QtGui.QPushButton('Print', self)
 		quit.clicked.connect(QtCore.QCoreApplication.instance().quit)
@@ -22,7 +22,7 @@ class Example(QtGui.QWidget):
 		#Labels
 		QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
 		color_l = QtGui.QLabel('Color Meaning:', self)
-		color_l.setToolTip('Yellow: gap between cutmarks\nBlue: avg is not between interims\nRed: CI over lap\nGreen: yellow & blue')
+		color_l.setToolTip('Interim Cutmarks: gap between cutmarks too small\nAvg Cutmarks: avg is not between interims\nConfidence Intervals: CIs over lap\n')
 		A1c_l = QtGui.QLabel('A1 Cutmarks: ', self)
 		A2c_l = QtGui.QLabel('A2 Cutmarks: ', self)
 		Avgc_l = QtGui.QLabel('Avg Cutmarks: ', self)
@@ -64,6 +64,7 @@ class Example(QtGui.QWidget):
 					c_line = QtGui.QLineEdit()
 					c_line.setText(str(df.iget_value(i, j)))
 					grid.addWidget(c_line, j, i + 1)
+				print c_line.text()
 					
 		#Average Cutmarks & Check 2
 		for i in range(4):
@@ -78,23 +79,29 @@ class Example(QtGui.QWidget):
 					c_line = QtGui.QLineEdit()
 					c_line.setText(str(df.iget_value(i, j)))
 					grid.addWidget(c_line, j, i + 1)
+				print c_line.text()
 				
 		#CI & Check 3
 		for i in range(4):
 			for j in range(9, 12):
-				#if cutmarks_check.df_check.iget_value(i, -
-				ci_l = QtGui.QLabel(str(df.iget_value(i, j)))
-				grid.addWidget(ci_l, j - 9, i + 6)
-				
+				if cutmarks_check.df_check.iget_value(i, j - 6) == True:
+					ci_l = QtGui.QLabel(str(df.iget_value(i, j)))
+					ci_l.setStyleSheet(yellow)
+					grid.addWidget(ci_l, j - 9, i + 6)
+				else:
+					ci_l = QtGui.QLabel(str(df.iget_value(i, j)))
+					grid.addWidget(ci_l, j - 9, i + 6)
 
 		self.setLayout(grid)
 		self.setGeometry(300, 300, 250, 150)
 		self.setWindowTitle('A2 MI 5th Grade ELA')
 		self.resize(700, 400)
+		self.emit(SIGNAL("
 		self.show()
 	
-	#def applyClicked(self)
-		
+	def applyClicked(self, c_line):
+		print "applied"
+		print c_line.text()
 def main():
 
 	app = QtGui.QApplication(sys.argv)

@@ -54,5 +54,6 @@ for i in range(3):
 		if df_check.iget_value(i + 1, j) == True:
 			df_check.iloc[[i],[j]] = True
 		else:
-			pass		
+			pass
+			
 print df_check
