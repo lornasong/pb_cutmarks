@@ -16,11 +16,7 @@ import matplotlib.pyplot as plt
 class Example(QtGui.QWidget):
 
 	def __init__(self):
-		super(Example, self).__init__()
-		
-		self.initUI()
-		
-	def initUI(self):
+		QtGui.QWidget.__init__(self)
 		
 		#Buttons
 		apply = QtGui.QPushButton('Apply', self)
@@ -56,41 +52,49 @@ class Example(QtGui.QWidget):
 		grid.addWidget(A2ci_l, 1, 5)
 		grid.addWidget(Avgci_l, 2, 5)
 		grid.addWidget(plot_l, 4, 0)
-		
+
 		#Read in files
 		filename = "df_cutmarks(test).csv"
 		df = pd.read_csv(filename, header = 0)
 		
+		self.label_name = ["self.input1", "self.input2", "self.input3", "self.input4", "self.input5", "self.input6", "self.input7", "self.input8", "self.input9", "self.input10", "self.input11", "self.input12"]
+		
 		#Interim Cutmarks & Check 1
+		k = 0
 		for i in range(4):
 			for j in range(2):
 				if cutmarks_check.df_check.iget_value(i, j) == True:
-					self.c_line = QtGui.QLineEdit()
-					self.c_line.setText(str(df.iget_value(i, j)))
+					self.label_name[k] = QtGui.QLineEdit()
+					self.label_name[k].returnPressed.connect(self.apply_clicked)
+					self.label_name[k].setText(str(df.iget_value(i, j)))
 					yellow = "QWidget {background-color: #FFFF66;}"
-					self.c_line.setStyleSheet(yellow)
-					grid.addWidget(self.c_line, j, i + 1)
+					self.label_name[k].setStyleSheet(yellow)
+					grid.addWidget(self.label_name[k], j, i + 1)
 				else:
-					self.c_line = QtGui.QLineEdit()
-					self.c_line.setText(str(df.iget_value(i, j)))
-					grid.addWidget(self.c_line, j, i + 1)
-					
+					self.label_name[k] = QtGui.QLineEdit()
+					self.label_name[k].returnPressed.connect(self.apply_clicked)
+					self.label_name[k].setText(str(df.iget_value(i, j)))
+					grid.addWidget(self.label_name[k], j, i + 1)
+				k = k+1
+		
 		#Average Cutmarks & Check 2
+		k = 0
 		for i in range(4):
 			for j in range(2, 3):
 				if cutmarks_check.df_check.iget_value(i, j) == True:
-					self.c_line = QtGui.QLineEdit(self)
-					self.c_line.setText(str(df.iget_value(i, j)))
+					self.label_name[k] = QtGui.QLineEdit(self)
+					self.label_name[k].returnPressed.connect(self.apply_clicked)
+					self.label_name[k].setText(str(df.iget_value(i, j)))
 					yellow = "QWidget {background-color: #FFFF66;}"
-					self.c_line.setStyleSheet(yellow)
-					grid.addWidget(self.c_line, j, i + 1)
+					self.label_name[k].setStyleSheet(yellow)
+					grid.addWidget(self.label_name[k], j, i + 1)
 				else:
-					c_line = QtGui.QLineEdit(self)
-					c_line.setText(str(df.iget_value(i, j)))
-					grid.addWidget(self.c_line, j, i + 1)
+					self.label_name[k] = QtGui.QLineEdit(self)
+					self.label_name[k].returnPressed.connect(self.apply_clicked)
+					self.label_name[k].setText(str(df.iget_value(i, j)))
+					grid.addWidget(self.label_name[k], j, i + 1)
+				k = k+1
 		
-		c_line.returnPressed.connect(self.apply_clicked)
-				
 		#CI & Check 3
 		for i in range(4):
 			for j in range(9, 12):
@@ -122,7 +126,17 @@ class Example(QtGui.QWidget):
 		ax2.bar(numpy.arange(4), uf_charts.plot_df2, width = 0.3, color = 'r')
 		ax2.set_xticks(numpy.arange(4)+0.3)
 		ax2.set_xticklabels(uf_charts.plot_index2)
-
+		
+		
+		#testing
+		self.textInput1 = QtGui.QLineEdit(self)
+		self.textInput1.returnPressed.connect(self.apply_clicked)
+		self.textInput2 = QtGui.QLineEdit(self)
+		self.textInput2.returnPressed.connect(self.apply_clicked)
+		grid.addWidget(self.textInput1, 20, 0)
+		grid.addWidget(self.textInput2, 20, 2)
+		
+		#Window Attributes
 		self.setLayout(grid)
 		self.setGeometry(300, 300, 250, 150)
 		self.setWindowTitle('A2 MI 5th Grade ELA')
@@ -130,9 +144,10 @@ class Example(QtGui.QWidget):
 		self.show()
 	
 	def apply_clicked(self):
-		print "applied"
-		great = self.c_line.text()
-		print great
+		hi = self.label_name[4]
+		hello = self.input2.text()
+		print hi
+		print hello
 		
 def main():
 
