@@ -55,5 +55,3 @@ for i in range(3):
 			df_check.iloc[[i],[j]] = True
 		else:
 			pass
-			
-print df_check

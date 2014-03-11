@@ -2,6 +2,16 @@ import sys
 from PyQt4 import QtGui, QtCore
 import pandas as pd
 import cutmarks_check
+import uf_charts
+
+import sys, os, random
+from PyQt4 import QtGui, QtCore
+
+import numpy
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+
 
 class Example(QtGui.QWidget):
 
@@ -35,10 +45,10 @@ class Example(QtGui.QWidget):
 		grid = QtGui.QGridLayout()
 		grid.setSpacing(10)
 		
-		grid.addWidget(apply, 5, 9)
-		grid.addWidget(export, 6, 9)
-		grid.addWidget(quit, 7, 9)
-		grid.addWidget(color_l, 8, 9)
+		grid.addWidget(apply, 5, 10)
+		grid.addWidget(export, 6, 10)
+		grid.addWidget(quit, 7, 10)
+		grid.addWidget(color_l, 8, 10)
 		grid.addWidget(A1c_l, 0, 0)
 		grid.addWidget(A2c_l, 1, 0)
 		grid.addWidget(Avgc_l, 2, 0)
@@ -64,7 +74,6 @@ class Example(QtGui.QWidget):
 					c_line = QtGui.QLineEdit()
 					c_line.setText(str(df.iget_value(i, j)))
 					grid.addWidget(c_line, j, i + 1)
-				print c_line.text()
 					
 		#Average Cutmarks & Check 2
 		for i in range(4):
@@ -79,7 +88,6 @@ class Example(QtGui.QWidget):
 					c_line = QtGui.QLineEdit()
 					c_line.setText(str(df.iget_value(i, j)))
 					grid.addWidget(c_line, j, i + 1)
-				print c_line.text()
 				
 		#CI & Check 3
 		for i in range(4):
@@ -91,17 +99,38 @@ class Example(QtGui.QWidget):
 				else:
 					ci_l = QtGui.QLabel(str(df.iget_value(i, j)))
 					grid.addWidget(ci_l, j - 9, i + 6)
+		
+		#Adding plots
+		self.figure = plt.figure()
+		self.canvas1 = FigureCanvas(self.figure)
+		grid.addWidget(self.canvas1, 5, 0, 9, 5)
+		ax1 = self.figure.add_subplot(111)
+		ax1.set_title('Distribution of Student Test Performance')
+		ax1.set_ylabel('Count of Students')
+		ax1.set_xlabel('Possible % Score')
+		ax1.bar(uf_charts.plot_index, uf_charts.plot_df, width = 0.03)
+
+		self.figure = plt.figure()
+		self.canvas2 = FigureCanvas(self.figure)
+		grid.addWidget(self.canvas2, 5, 5, 9, 5)
+		ax2 = self.figure.add_subplot(111)
+		ax2.set_title('% of Students by Performance Level')
+		ax2.set_ylabel('% of Students')
+		ax2.set_xlabel('Performance Levels')
+		ax2.bar(numpy.arange(4), uf_charts.plot_df2, width = 0.3, color = 'r')
+		ax2.set_xticks(numpy.arange(4)+0.3)
+		ax2.set_xticklabels(uf_charts.plot_index2)
 
 		self.setLayout(grid)
 		self.setGeometry(300, 300, 250, 150)
 		self.setWindowTitle('A2 MI 5th Grade ELA')
-		self.resize(700, 400)
-		self.emit(SIGNAL("
+		self.resize(1200, 550)
 		self.show()
 	
 	def applyClicked(self, c_line):
 		print "applied"
 		print c_line.text()
+		
 def main():
 
 	app = QtGui.QApplication(sys.argv)
