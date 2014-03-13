@@ -1,5 +1,5 @@
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
@@ -18,17 +18,19 @@ class Window(QtGui.QDialog):
         # it takes the `figure` instance as a parameter to __init__
         self.canvas = FigureCanvas(self.figure)
 
-
+        # this is the Navigation widget
+        # it takes the Canvas widget and a parent
+        self.toolbar = NavigationToolbar(self.canvas, self)
 
         # Just some button connected to `plot` method
         self.button = QtGui.QPushButton('Plot')
         self.button.clicked.connect(self.plot)
 
         # set the layout
-        layout = QtGui.QGridLayout()
-        #layout.addWidget(self.toolbar, 3, 3)
-        layout.addWidget(self.canvas, 1, 0)
-        layout.addWidget(self.button, 2, 1)
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
+        layout.addWidget(self.button)
         self.setLayout(layout)
 
     def plot(self):
@@ -40,13 +42,13 @@ class Window(QtGui.QDialog):
         ax = self.figure.add_subplot(111)
 
         # discards the old graph
-        #ax.hold(False)
+        ax.hold(False)
 
         # plot data
         ax.plot(data, '*-')
 
         # refresh canvas
-        #self.canvas.draw()
+        self.canvas.draw()
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

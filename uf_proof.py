@@ -1,8 +1,9 @@
+#path: Set-Location C:\Users\lsong\Documents\GitHub\pb_cutmarks
 import sys
 from PyQt4 import QtGui, QtCore
 import pandas as pd
 import cutmarks_check
-import uf_charts
+import data_input
 
 import sys, os, random
 from PyQt4 import QtGui, QtCore
@@ -12,8 +13,9 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
+from subprocess import Popen
 
-class Example(QtGui.QWidget):
+class MainApp(QtGui.QWidget):
 
 	def __init__(self):
 		QtGui.QWidget.__init__(self)
@@ -22,7 +24,10 @@ class Example(QtGui.QWidget):
 		apply = QtGui.QPushButton('Apply', self)
 		apply.clicked.connect(self.apply_clicked)
 		export = QtGui.QPushButton('Export', self)
-		quit = QtGui.QPushButton('Print', self)
+		export.clicked.connect(self.export_clicked)
+		printer = QtGui.QPushButton('Print', self)
+		printer.clicked.connect(self.printer_clicked)
+		quit = QtGui.QPushButton('Quit', self)
 		quit.clicked.connect(QtCore.QCoreApplication.instance().quit)
 		
 		#Labels
@@ -43,8 +48,9 @@ class Example(QtGui.QWidget):
 		
 		grid.addWidget(apply, 5, 10)
 		grid.addWidget(export, 6, 10)
-		grid.addWidget(quit, 7, 10)
+		grid.addWidget(printer, 7, 10)
 		grid.addWidget(color_l, 8, 10)
+		grid.addWidget(quit, 9, 10)
 		grid.addWidget(A1c_l, 0, 0)
 		grid.addWidget(A2c_l, 1, 0)
 		grid.addWidget(Avgc_l, 2, 0)
@@ -114,7 +120,7 @@ class Example(QtGui.QWidget):
 		ax1.set_title('Distribution of Student Test Performance')
 		ax1.set_ylabel('Count of Students')
 		ax1.set_xlabel('Possible % Score')
-		ax1.bar(uf_charts.plot_index, uf_charts.plot_df, width = 0.03)
+		ax1.bar(data_input.plot_index, data_input.plot_df, width = 0.03)
 
 		self.figure = plt.figure()
 		self.canvas2 = FigureCanvas(self.figure)
@@ -123,20 +129,9 @@ class Example(QtGui.QWidget):
 		ax2.set_title('% of Students by Performance Level')
 		ax2.set_ylabel('% of Students')
 		ax2.set_xlabel('Performance Levels')
-		ax2.bar(numpy.arange(4), uf_charts.plot_df2, width = 0.3, color = 'r')
-		ax2.set_xticks(numpy.arange(4)+0.3)
-		ax2.set_xticklabels(uf_charts.plot_index2)
-		
-		
-		#testing
-		"""
-		self.textInput1 = QtGui.QLineEdit(self)
-		self.textInput1.returnPressed.connect(self.apply_clicked)
-		self.textInput2 = QtGui.QLineEdit(self)
-		self.textInput2.returnPressed.connect(self.apply_clicked)
-		grid.addWidget(self.textInput1, 20, 0)
-		grid.addWidget(self.textInput2, 20, 2)
-		"""
+		ax2.bar(numpy.arange(4), data_input.plot_df2, width = 0.3, color = 'r', align = "center")
+		ax2.set_xticks(numpy.arange(4))
+		ax2.set_xticklabels(data_input.plot_index2)
 		
 		#Window Attributes
 		self.setLayout(grid)
@@ -146,34 +141,75 @@ class Example(QtGui.QWidget):
 		self.show()
 	
 	def apply_clicked(self):
-	
-		filename = "df_cutmarks(test).csv"
-		df = pd.read_csv(filename, header = 0)
-		print df
 		
+		#Inputs new A1 cutmarks
 		k = 0
 		for i in range(4):
-			for j in range(2):
-				new = self.label_name[k].text()
-				new_float = float(new)
-				df.replace[i, j] = new_float
-				k = k+1
+			new = self.label_name[k].text()
+			new_float = float(new)
+			data_input.df_cut.loc[i, 'A1_cut'] = new_float
+			k = k+2
 		
-		#Average Cutmarks & Check 2
+		#Inputs new A2 cutmarks
+		k = 1
 		for i in range(4):
-			for j in range(2, 3):
-				new = self.label_name[k].text()
-				new_float = float(new)
-				df.replace[i, j] = new_float
-				k = k+1
+			new = self.label_name[k].text()
+			new_float = float(new)
+			data_input.df_cut.loc[i, 'A2_cut'] = new_float
+			k = k+2		
+
+		#Inputs new Avg cutmarks
+		k = 8
+		for i in range(4):
+			new = self.label_name[k].text()
+			new_float = float(new)
+			data_input.df_cut.loc[i, 'Avg_cut'] = new_float
+			k = k+1
 		
-		print "new df"
-		print df
+		#Reassign proficiencies
+		nplot_index2, nplot_df2 = data_input.cut_updates(data_input.df_cut, data_input.df_csv)
+		
+		#UPDATE OLD GRAPH
+		#create an axis
+		ax = self.figure.add_subplot(111)
+		# discards the old graph
+		ax.hold(False)
+		# plot data
+		ax.bar(numpy.arange(len(nplot_index2)), nplot_df2, width = 0.3, color = 'r', align = "center")
+		ax.set_xticks(numpy.arange(len(nplot_index2)))
+		ax.set_xticklabels(nplot_index2)
+		ax.set_title('% of Students by Performance Level')
+		ax.set_ylabel('% of Students')
+		ax.set_xlabel('Performance Levels')
+		# refresh canvas
+		self.canvas2.draw()
+		
+		return data_input.df_cut
+	
+	def export_clicked(self):
+		
+		df = self.apply_clicked()
+		df_print = pd.DataFrame(data = [df.A1_cut, df.A2_cut, df.Avg_cut, df.A1_CI, df.A2_CI, df.AVG_CI])
+		df_print.to_csv('A2 MI Grade 5 ELA.csv', sep = ',', header = False)
+		p = Popen('A2 MI Grade 5 ELA.csv', shell=True)
+		
+	def printer_clicked(self):
+		
+		printer=QtGui.QPrinter()
+		dialog = QtGui.QPrintDialog(printer, self)
+		if(dialog.exec_() != QtGui.QDialog.Accepted):
+			return
+		p=QtGui.QPixmap.grabWidget(self)
+		printGUI = QtGui.QLabel()
+		printGUI.setPixmap(p)
+		painter = QtGui.QPainter(printer)
+		printGUI.render(painter)
+		painter.end()
 		
 def main():
 
 	app = QtGui.QApplication(sys.argv)
-	ex = Example()
+	ex = MainApp()
 	sys.exit(app.exec_())
 
 if __name__ == '__main__':
