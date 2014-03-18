@@ -33,11 +33,12 @@ class MainApp(QtGui.QWidget):
 		#Labels
 		QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
 		color_l = QtGui.QLabel('Color Meaning:', self)
-		color_l.setToolTip('Interim Cutmarks: gap between cutmarks too small\nAvg Cutmarks: avg is not between interims\nConfidence Intervals: CIs over lap\n')
+		color_l.setToolTip('Interim Cutmarks: gap between cutmarks too small\n\nAvg Cutmarks: avg is not between interims\n\nConfidence Intervals: CIs over lap\n')
 		A1c_l = QtGui.QLabel('A1 Cutmarks: ', self)
 		A2c_l = QtGui.QLabel('A2 Cutmarks: ', self)
 		Avgc_l = QtGui.QLabel('Avg Cutmarks: ', self)
 		plot_l = QtGui.QLabel('A2 Analysis: ', self)
+		plot_l.setStyleSheet('font: 12pt;')
 		A1ci_l = QtGui.QLabel('A1 CI: ', self)
 		A2ci_l = QtGui.QLabel('A2 CI: ', self)
 		Avgci_l = QtGui.QLabel('Avg CI: ', self)
@@ -167,7 +168,7 @@ class MainApp(QtGui.QWidget):
 			k = k+1
 		
 		#Reassign proficiencies
-		nplot_index2, nplot_df2 = data_input.cut_updates(data_input.df_cut, data_input.df_csv)
+		nplot_index2, nplot_df2, df_csv_update = data_input.cut_updates(data_input.df_cut, data_input.df_csv)
 		
 		#UPDATE OLD GRAPH
 		#create an axis
@@ -184,14 +185,17 @@ class MainApp(QtGui.QWidget):
 		# refresh canvas
 		self.canvas2.draw()
 		
-		return data_input.df_cut
+		return data_input.df_cut, df_csv_update
 	
 	def export_clicked(self):
 		
-		df = self.apply_clicked()
+		df, df_csv_updated = self.apply_clicked()
 		df_print = pd.DataFrame(data = [df.A1_cut, df.A2_cut, df.Avg_cut, df.A1_CI, df.A2_CI, df.AVG_CI])
-		df_print.to_csv('A2 MI Grade 5 ELA.csv', sep = ',', header = False)
-		p = Popen('A2 MI Grade 5 ELA.csv', shell=True)
+		df_print.to_csv('A2 MI Grade 5 ELA cutmarks.csv', sep = ',', header = False)
+		p = Popen('A2 MI Grade 5 ELA cutmarks.csv', shell=True)
+		
+		df_csv_updated.to_csv('A2 MI Grade 5 ELA Data Export.csv', sep = ',', header = True)
+		q = Popen('A2 MI Grade 5 ELA Data Export.csv', shell = True)
 		
 	def printer_clicked(self):
 		

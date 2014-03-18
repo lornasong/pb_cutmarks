@@ -33,10 +33,10 @@ curr_prof_lvl = ['Advanced', 'Proficient', 'Basic', 'Warning']
 for i in xrange(len(curr_prof_lvl)-1,-1,-1):
 	if i ==  len(curr_prof_lvl):
 		condition = df_csv['A2'] > 0
-		df_csv.loc[condition, 'A2 Proficiency Alt'] = curr_prof_lvl[i]	
+		df_csv.loc[condition, 'A2 Assigned Prof'] = curr_prof_lvl[i]	
 	else:
 		condition = df_csv['A2'] > curr_cutmark[i]
-		df_csv.loc[condition, 'A2 Proficiency Alt'] = curr_prof_lvl[i]
+		df_csv.loc[condition, 'A2 Assigned Prof'] = curr_prof_lvl[i]
 
 #PREPARING DATA FOR PLOTS
 #Number of students that have each percentage level of ANET assessment. This graph will be undynamic
@@ -44,7 +44,7 @@ plot_df = df_csv['A2'].value_counts()
 plot_index = plot_df.index
 
 #% of students in each proficiency level assigned by cutmarks
-plot_df2temp = df_csv['A2 Proficiency Alt'].value_counts()
+plot_df2temp = df_csv['A2 Assigned Prof'].value_counts()
 plot_df2 = plot_df2temp/len(df_csv.index)
 plot_index2 = plot_df2.index
 
@@ -59,16 +59,16 @@ def cut_updates(df_cut, df_csv):
 	for i in xrange(len(curr_prof_lvl)-1,-1,-1):
 		if i ==  len(curr_prof_lvl):
 			condition = df_csv['A2'] > 0
-			df_csv.loc[condition, 'A2 Proficiency Alt'] = curr_prof_lvl[i]	
+			df_csv.loc[condition, 'A2 Assigned Prof'] = curr_prof_lvl[i]	
 		else:
 			condition = df_csv['A2'] > curr_cutmark[i]
-			df_csv.loc[condition, 'A2 Proficiency Alt'] = curr_prof_lvl[i]
+			df_csv.loc[condition, 'A2 Assigned Prof'] = curr_prof_lvl[i]
 
 	#UPDATE Dynamic plot
 	#% of students in each proficiency level assigned by cutmarks
-	nplot_df2temp = df_csv['A2 Proficiency Alt'].value_counts()
+	nplot_df2temp = df_csv['A2 Assigned Prof'].value_counts()
 	nplot_df2 = nplot_df2temp/len(df_csv.index)
 	nplot_index2 = nplot_df2.index
 	
-	return (nplot_index2, nplot_df2)
+	return (nplot_index2, nplot_df2, df_csv)
 	
