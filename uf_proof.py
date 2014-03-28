@@ -130,9 +130,17 @@ class MainApp(QtGui.QWidget):
 		ax2.set_title('% of Students by Performance Level')
 		ax2.set_ylabel('% of Students')
 		ax2.set_xlabel('Performance Levels')
-		ax2.bar(numpy.arange(4), data_input.plot_df2, width = 0.3, color = 'r', align = "center")
+		ind = numpy.arange(2)
+		width = 0.2
+		a, b, c, d, df_csv = data_input.cut_updates(data_input.df_cut, data_input.df_csv)
+		ax2.bar(ind, a, width, align = "center", color='#009933')
+		ax2.bar(ind, b, width, color='#33CC33', align = "center", bottom=a)
+		ax2.bar(ind, c, width, color='#FFFF00', align = "center", bottom=[a[j] +b[j] for j in range(len(a))])
+		ax2.bar(ind, d, width, color='#FF0000', align = "center", bottom=[a[j] +b[j] +c[j] for j in range(len(a))])
 		ax2.set_xticks(numpy.arange(4))
-		ax2.set_xticklabels(data_input.plot_index2)
+		ax2.set_xticklabels(['A1', 'A2'])
+		lgd = ax2.legend(['Advanced', 'Proficient', 'Basic', 'Warning'])
+
 		
 		#Window Attributes
 		self.setLayout(grid)
@@ -168,20 +176,24 @@ class MainApp(QtGui.QWidget):
 			k = k+1
 		
 		#Reassign proficiencies
-		nplot_index2, nplot_df2, df_csv_update = data_input.cut_updates(data_input.df_cut, data_input.df_csv)
-		
+		na, nb, nc, nd, df_csv_update = data_input.cut_updates(data_input.df_cut, data_input.df_csv)
 		#UPDATE OLD GRAPH
 		#create an axis
-		ax = self.figure.add_subplot(111)
-		# discards the old graph
-		ax.hold(False)
-		# plot data
-		ax.bar(numpy.arange(len(nplot_index2)), nplot_df2, width = 0.3, color = 'r', align = "center")
-		ax.set_xticks(numpy.arange(len(nplot_index2)))
-		ax.set_xticklabels(nplot_index2)
-		ax.set_title('% of Students by Performance Level')
-		ax.set_ylabel('% of Students')
-		ax.set_xlabel('Performance Levels')
+		ax2 = self.figure.add_subplot(111)
+		ax2.set_title('% of Students by Performance Level')
+		ax2.set_ylabel('% of Students')
+		ax2.set_xlabel('Performance Levels')
+		ind = numpy.arange(2)
+		width = 0.2
+		a, b, c, d, df_csv = data_input.cut_updates(data_input.df_cut, data_input.df_csv)
+		ax2.bar(ind, a, width, align = "center", color='#009933')
+		ax2.bar(ind, b, width, color='#33CC33', align = "center", bottom=a)
+		ax2.bar(ind, c, width, color='#FFFF00', align = "center", bottom=[a[j] +b[j] for j in range(len(a))])
+		ax2.bar(ind, d, width, color='#FF0000', align = "center", bottom=[a[j] +b[j] +c[j] for j in range(len(a))])
+		ax2.set_xticks(numpy.arange(4))
+		ax2.set_xticklabels(['A1', 'A2'])
+		lgd = ax2.legend(['Advanced', 'Proficient', 'Basic', 'Warning'])
+
 		# refresh canvas
 		self.canvas2.draw()
 		
